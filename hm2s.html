@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+        body{
+            background: rgb(201, 243, 234);
+        }
+        h3{
+            font-size: 36px;
+        }
+        hr{
+            margin: 5px;
+            color: cornsilk;
+        }
+        button{
+            color:navy;
+            font-size: 20px;
+            padding: 3px;
+            margin: 10px;
+        }
+        .base {
+            width: 600px;
+            border:1px solid cornsilk;
+            
+            text-align: center;
+            font-size: 20px;
+            margin: 0 auto;
+            align-content: center;
+        }
+
+        .Split_time{
+            text-align: left;
+            margin: 5px auto;
+            padding: 5px auto;
+            color: rgb(37, 177, 196);
+        }
+        .All_time{
+            margin: 5px auto;
+            padding: 5px auto;
+            color:darksalmon; 
+        }
+        .ar{
+            height: 60;
+            margin: 2px;
+            padding: 5px;
+            color:green;
+            font-size: 48px;
+        }
+        .HM2S{
+            padding-top: 30px;
+        }
+        .sm{
+            font-size: 14px;
+            text-align: left;
+            color: navy;
+        }
+    </style>
+    <title>时分秒互转</title>
+    <script>
+        var raidos="s";
+        function raidocheck(v){
+            raidos=v;
+        }
+        function GetByID(inId){
+            return document.getElementById(inId);
+        }
+        function hmTos(){
+            var sObj=GetByID("timeOnSec");
+            var aObj=GetByID("arrow");
+            var STAObj=GetByID("ttOnall");
+            STAObj.innerText = "";
+            var hh=0;
+            var mm=0;
+            var ss=0;
+            var sec=0;
+            var TStr="";
+            var TSA=[];
+            aObj.innerHTML="&dArr;";
+            sObj.value="";
+            if(raidos=="s"){
+                hh=Number(GetByID("HH").value);
+                mm=Number(GetByID("MM").value);;
+                ss=Number(GetByID("SS").value); 
+            }else{
+                TStr=GetByID("timeOnSplit").value;
+                TSA=TStr.split(":");
+                var len = TSA.length;
+                if(len==3){
+                    hh=Number(TSA[0]);
+                    mm=Number(TSA[1]);
+                    ss=Number(TSA[2]);
+                }else if(len==2){
+                    mm=Number(TSA[0]);
+                    ss=Number(TSA[1]);
+                }else{
+                    ss=Number(TSA[0]);
+                }
+            }
+            sec=hh*3600+mm*60+ss;
+            sObj.value=sec.toFixed(3);
+        }
+        function sTohm(){
+            var HHObj=GetByID("HH");
+            var MMObj=GetByID("MM");
+            var SSObj=GetByID("SS");
+            var STObj=GetByID("timeOnSplit");
+            var STAObj=GetByID("ttOnall");
+            var aObj=GetByID("arrow");
+            aObj.innerHTML="&uArr;";
+            HHObj.value="";
+            MMObj.value="";
+            SSObj.value="";
+            STObj.value="";
+            STAObj.innerText="";
+            var str=GetByID("timeOnSec").value;
+            var TimeOnS=Number(str);
+            var TOSF=Math.floor(TimeOnS);
+            var TOSD=TimeOnS-TOSF;
+            var sec=TOSF%60 + TOSD;
+            sec=sec.toFixed(3);
+            var min=Math.floor((TOSF%3600)/60);
+            var hou=Math.floor(TOSF/3600);
+            var STStr="";
+            var STAStr="";
+            if(hou){
+                HHObj.value=hou;
+                STStr=STStr+hou+":"
+            }
+            if(hou || min){
+                MMObj.value=min;
+                STStr=STStr+min+":"
+            }
+            SSObj.value=sec;
+            STStr=STStr+sec;
+            STObj.value=STStr;
+            STAStr= STAStr +hou+":";
+            STAStr= STAStr + (min>10?min:"0"+min)+":";
+            STAStr= STAStr + (sec>10?sec:"0"+sec);
+            STAObj.innerText = STAStr;
+        }
+        function NumberCheck1(num){
+            var str=num;
+            str=str.replace(/[^0-9]/g,'');
+            return str;
+        }
+
+        function NumberCheck2(num){
+            var str=num;
+            str=str.replace(/[^\.0-9]/g,'');
+            if (str.indexOf(".") != -1) { //限制只有1个小数点
+                var str_ = str.substr(str.indexOf(".") + 1);
+                if (str_.indexOf(".") != -1) {
+                    str = str.substr(0, str.indexOf(".") + str_.indexOf(".") + 1);
+                }
+            }
+            return str;
+        }
+        function NumberCheck3(num){
+            var str=num;
+            var OneI=-1,TwoI=-1;
+            str=str.replace(/[^:\.0-9]/g,'');
+            var str_;
+            if (str.indexOf(".") != -1) { 
+                OneI = str.indexOf(".",0);
+                TwoI=-1;
+                if(str.indexOf(".", OneI+1)!=-1){ // 保障只有1个小数点
+                    TwoI=str.indexOf(".", OneI+1);
+                    str_=str.substr(0,TwoI) +str.substr(TwoI+1);
+                    str=str_ ;
+                }
+                if(str.indexOf(":", OneI+1)!=-1){ // 保障小数点后没有:号
+                    TwoI=str.indexOf(":", OneI+1);
+                    str_=str.substr(0,TwoI) +str.substr(TwoI+1);
+                    str=str_ ;
+                }
+            }
+            if(str.indexOf("::") != -1){ // 不能有::即冒号间必须有数据
+                str=str.replace(/::/g,':');
+            }
+            if (str.indexOf(":") != -1) { //限制只有不多于2个分号
+                OneI = str.indexOf(":",0);
+                TwoI=-1;
+                if(str.indexOf(":", OneI+1)!=-1){
+                    TwoI=str.indexOf(":", OneI+1);
+                }
+                if(TwoI!=-1){
+                    if(str.indexOf(":",TwoI+1)!=-1){
+                    var ThteeI = str.indexOf(":",TwoI+1);
+                    str_=str.substr(0,ThteeI) +str.substr(ThteeI+1);
+                    str=str_ ;
+                    }
+                }  
+            }
+            return str;
+        }
+        function checkeda(){
+            raidocheck('a');
+            GetByID("HMS-a").checked="true";
+
+        }
+        function checkeds(){
+            raidocheck('s');
+            GetByID("HMS-s").checked="true";
+        }
+    </script>
+  </head> 
+  <body>
+    <div class="base">
+        <h3>HM2S时间数据转换</h3>
+    <div class="Split_time">
+        <p>时分秒格式：<br/>
+            
+            <input type="radio" name="HMS" id="HMS-s" value="s" onclick="raidocheck(this.value)"  checked />分列
+            
+            <input type="text" id="HH" onkeyup="this.value=NumberCheck1(this.value)"  onfocus="checkeds()"></input> 时
+            <input type="text" id="MM" onkeyup="this.value=NumberCheck1(this.value)"  onfocus="checkeds()"></input> 分
+            <input type="text" id="SS" onkeyup="this.value=NumberCheck2(this.value)"   onfocus="checkeds()"></input> 秒<br/>
+            
+            <input type="radio" name="HMS" id="HMS-a" value="a"  onclick="raidocheck(this.value)" />整体 <input type="text" id="timeOnSplit"  onfocus="checkeda()" onkeyup="this.value=NumberCheck3(this.value)"></input> == <span id="ttOnall"></span><br/>
+           
+        </p>
+    </div>
+    <div class="ar">
+        <span id="arrow">&nbsp;</span>
+    </div>
+    <div class="All_time">秒格式：
+        <input type="text" id="timeOnSec" onkeyup="value=NumberCheck2(value) "></input>秒
+    </div>
+    <div class="HM2S">
+        <button onclick="hmTos()" >时:分:秒=>秒</button>  <button  onclick="sTohm()">秒=>时:分:秒</button>
+    </div>
+    <hr/>
+    <div class="sm">
+        说明：
+        <ol>
+            <li>本工具提供2种转换</li>
+            <li>时分秒格式数据转换成秒表示的数据，例如 3:05:45.450 转换为 1145.450秒</li>
+            <li>秒表示的数据转化为时分秒格式的数据，例如 10000.500秒 转化为2:46:40.500</li>
+            <li>数据输入时，只保证了基本格式符合，既时、分中不能有小数点，秒中只有1个小数点，且输入都是数字</li>
+            <li>对于整体输入的时间数据，也只检测了最多有2个冒号，且小数点后不能有冒号，即 4:67.46、4:45: 等都算是正确的格式</li>
+            <li>对应复制粘贴来输入的数据，会按上述要求进行检查，删除不符合的部分，这点需要用户自行检查</li>
+            <li>有问题联系xdsnet@qq.com进行交流</li>
+        </ol>
+    </div>
+    </div>  
+  </body>
+</html>
